@@ -13,7 +13,7 @@
             --input-bg: #222222;
             --border-color: #444444;
             --primary-color: #4a89dc;
-            --clear-button: `var(--primary-color)`
+            --clear-button: #e74c3c;
         }
         
         .light-mode {
@@ -200,7 +200,6 @@
             text-decoration: underline;
         }
         
-        /* Responsive adjustments */
         @media (max-width: 600px) {
             .row {
                 flex-direction: column;
@@ -232,7 +231,6 @@
     </style>
 </head>
 <body>
-    <!-- The rest of your HTML remains exactly the same -->
     <div class="header">
         <h1>Japanese Adjective Practice</h1>
         <div class="controls">
@@ -336,6 +334,10 @@
     </footer>
     
     <script>
+        // Speech control variables
+        let speechInterval;
+        let isSpeaking = false;
+        
         // Dark/Light mode toggle
         const modeToggle = document.getElementById('modeToggle');
         modeToggle.addEventListener('click', function() {
@@ -363,6 +365,11 @@
             englishMode = !englishMode;
             languageToggle.textContent = englishMode ? 'JP' : 'EN';
             updateSentence();
+            // Restart speech with new language when toggling
+            if (isSpeaking) {
+                stopSpeech();
+                startSpeech();
+            }
         });
         
         // Form elements
@@ -386,11 +393,13 @@
         subjectSelect.addEventListener('change', function() {
             customSubject.value = '';
             updateSentence();
+            if (isSpeaking) startSpeech();
         });
         
         customSubject.addEventListener('input', function() {
             if (this.value) subjectSelect.value = '';
             updateSentence();
+            if (isSpeaking) startSpeech();
         });
         
         adjectiveSelect.addEventListener('change', function() {
@@ -401,6 +410,7 @@
                 originalAdjectiveRomaji = romaji;
             }
             updateSentence();
+            if (isSpeaking) startSpeech();
         });
         
         customAdjective.addEventListener('input', function() {
@@ -408,9 +418,65 @@
             originalAdjective = '';
             originalAdjectiveRomaji = '';
             updateSentence();
+            if (isSpeaking) startSpeech();
         });
         
-        copulaSelect.addEventListener('change', updateSentence);
+        copulaSelect.addEventListener('change', function() {
+            updateSentence();
+            if (isSpeaking) startSpeech();
+        });
+        
+        // Speech control functions
+        function startSpeech() {
+            stopSpeech(); // Clear any existing interval
+            speakCurrentSentence(); // Speak immediately
+            // Set up repeating speech every 3 seconds
+            speechInterval = setInterval(speakCurrentSentence, 3000);
+            isSpeaking = true;
+        }
+        
+        function stopSpeech() {
+            clearInterval(speechInterval);
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
+            isSpeaking = false;
+        }
+        
+        function speakCurrentSentence() {
+            if (subjectSelect.value || customSubject.value) {
+                if (englishMode) {
+                    speakEnglishSentence();
+                } else {
+                    speakJapaneseSentence();
+                }
+            }
+        }
+        
+        function speakJapaneseSentence() {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(japaneseSentence.textContent);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function speakEnglishSentence() {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const [,,subjectEnglish] = subjectSelect.value.split('/');
+                const [,,adjectiveEnglish] = adjectiveSelect.value.split('/');
+                const [,,copulaEnglish] = copulaSelect.value.split('/');
+                
+                const englishText = `${subjectEnglish || customSubject.value} ${adjectiveEnglish || customAdjective.value} ${copulaEnglish}`;
+                const utterance = new SpeechSynthesisUtterance(englishText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
         
         // Clear button functionality
         clearButton.addEventListener('click', function() {
@@ -434,10 +500,8 @@
             japaneseSentence.textContent = 'Select subject, adjective and tense/form';
             romajiPronunciation.textContent = '';
             
-            // Cancel any ongoing speech
-            if ('speechSynthesis' in window) {
-                speechSynthesis.cancel();
-            }
+            // Stop any ongoing speech
+            stopSpeech();
         });
         
         function updateSentence() {
@@ -502,25 +566,14 @@
                 } else {
                     japaneseSentence.textContent = `${subject}は ${adjustedAdjective}${copula}`;
                     romajiPronunciation.textContent = `${subjectRomaji} wa ${adjustedAdjectiveRomaji}${copulaRomaji}`;
-                    
-                    // Speak the Japanese sentence
-                    speakJapanese(japaneseSentence.textContent);
                 }
+                
+                // Start speaking automatically when sentence is complete
+                startSpeech();
             } else {
                 japaneseSentence.textContent = 'Select subject, adjective and tense/form';
                 romajiPronunciation.textContent = '';
-            }
-        }
-        
-        function speakJapanese(text) {
-            if ('speechSynthesis' in window) {
-                // Cancel any ongoing speech
-                speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ja-JP';
-                utterance.rate = 0.9;
-                speechSynthesis.speak(utterance);
+                stopSpeech();
             }
         }
         
