@@ -13,6 +13,7 @@
             --input-bg: #222222;
             --border-color: #444444;
             --primary-color: #4a89dc;
+            --clear-button: `var(--primary-color)`
         }
         
         .light-mode {
@@ -23,6 +24,7 @@
             --input-bg: #ffffff;
             --border-color: #dddddd;
             --primary-color: #3b7dd8;
+            --clear-button: #ffffff;
         }
         
         body {
@@ -66,7 +68,7 @@
             gap: 10px;
         }
         
-        .mode-toggle, .language-toggle {
+        .mode-toggle, .language-toggle, .clear-button {
             padding: 8px 12px;
             font-size: 14px;
             background-color: var(--button-bg);
@@ -77,7 +79,21 @@
             transition: all 0.2s ease;
         }
         
-        .mode-toggle:hover, .language-toggle:hover {
+        .clear-button {
+            background-color: var(--clear-button);
+            color: white;
+            border: none;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .light-mode .clear-button {
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            background-color: var(--clear-button);
+        }
+        
+        .mode-toggle:hover, .language-toggle:hover, .clear-button:hover {
             opacity: 0.9;
             transform: translateY(-1px);
         }
@@ -216,6 +232,7 @@
     </style>
 </head>
 <body>
+    <!-- The rest of your HTML remains exactly the same -->
     <div class="header">
         <h1>Japanese Adjective Practice</h1>
         <div class="controls">
@@ -311,6 +328,8 @@
         <div class="negative-note" id="negativeNote"></div>
     </div>
     
+    <button class="clear-button" id="clearButton">Clear All</button>
+    
     <footer class="footer">
         <p>Contact me: <a href="mailto:mementomorikatsu@gmail.com">mementomorikatsu@gmail.com</a></p>
         <p>Mo Yasuda</p>
@@ -352,6 +371,7 @@
         const adjectiveSelect = document.getElementById('adjectiveSelect');
         const customAdjective = document.getElementById('customAdjective');
         const copulaSelect = document.getElementById('copulaSelect');
+        const clearButton = document.getElementById('clearButton');
         
         // Result elements
         const japaneseSentence = document.getElementById('japaneseSentence');
@@ -391,6 +411,34 @@
         });
         
         copulaSelect.addEventListener('change', updateSentence);
+        
+        // Clear button functionality
+        clearButton.addEventListener('click', function() {
+            // Reset all select elements
+            subjectSelect.value = '';
+            adjectiveSelect.value = '';
+            copulaSelect.value = '';
+            
+            // Clear all custom inputs
+            customSubject.value = '';
+            customAdjective.value = '';
+            
+            // Reset the original adjective
+            originalAdjective = '';
+            originalAdjectiveRomaji = '';
+            
+            // Hide negative note
+            negativeNote.style.display = 'none';
+            
+            // Reset the result display
+            japaneseSentence.textContent = 'Select subject, adjective and tense/form';
+            romajiPronunciation.textContent = '';
+            
+            // Cancel any ongoing speech
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
+        });
         
         function updateSentence() {
             // Get selected values
