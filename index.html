@@ -306,15 +306,15 @@
             <div class="copula-container">
                 <select id="copulaSelect">
                     <option value="">Select tense/form</option>
-                    <option value="でした。/deshita./was.">でした。 (past affirmative)</option>
-                    <option value="ではなかった。/dewa nakatta./was not.">ではなかった。 (past negative)</option>
-                    <option value="でしたか？/deshita ka?/was?">でしたか？ (past question)</option>
-                    <option value="です。/desu./am/is/are.">です。 (present affirmative)</option>
-                    <option value="ではありません。/dewa arimasen./am/is/are not.">ではありません。 (present negative)</option>
-                    <option value="ですか？/desu ka?/am/is/are?">ですか？ (present question)</option>
-                    <option value="でしょう。/deshou./will be.">でしょう。 (future affirmative)</option>
-                    <option value="ではないでしょう。/dewa nai deshou./will not be.">ではないでしょう。 (future negative)</option>
-                    <option value="でしょうか？/deshou ka?/will be?">でしょうか？ (future question)</option>
+                    <option value="でした。/deshita./was">でした。 (past affirmative)</option>
+                    <option value="ではなかった。/dewa nakatta./was not">ではなかった。 (past negative)</option>
+                    <option value="でしたか？/deshita ka?/was">でしたか？ (past question)</option>
+                    <option value="です。/desu./be">です。 (present affirmative)</option>
+                    <option value="ではありません。/dewa arimasen./be not">ではありません。 (present negative)</option>
+                    <option value="ですか？/desu ka?/be">ですか？ (present question)</option>
+                    <option value="でしょう。/deshou./will be">でしょう。 (future affirmative)</option>
+                    <option value="ではないでしょう。/dewa nai deshou./will not be">ではないでしょう。 (future negative)</option>
+                    <option value="でしょうか？/deshou ka?/will be">でしょうか？ (future question)</option>
                 </select>
             </div>
         </div>
@@ -365,7 +365,7 @@
             englishMode = !englishMode;
             languageToggle.textContent = englishMode ? 'JP' : 'EN';
             updateSentence();
-            // Restart speech with new language when toggling
+            // Restart speech when toggling language
             if (isSpeaking) {
                 stopSpeech();
                 startSpeech();
@@ -429,9 +429,9 @@
         // Speech control functions
         function startSpeech() {
             stopSpeech(); // Clear any existing interval
-            speakCurrentSentence(); // Speak immediately
+            speakJapanese(); // Speak immediately
             // Set up repeating speech every 3 seconds
-            speechInterval = setInterval(speakCurrentSentence, 3000);
+            speechInterval = setInterval(speakJapanese, 3000);
             isSpeaking = true;
         }
         
@@ -443,36 +443,11 @@
             isSpeaking = false;
         }
         
-        function speakCurrentSentence() {
-            if (subjectSelect.value || customSubject.value) {
-                if (englishMode) {
-                    speakEnglishSentence();
-                } else {
-                    speakJapaneseSentence();
-                }
-            }
-        }
-        
-        function speakJapaneseSentence() {
-            if ('speechSynthesis' in window) {
+        function speakJapanese() {
+            if ('speechSynthesis' in window && japaneseSentence.textContent) {
                 speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(japaneseSentence.textContent);
                 utterance.lang = 'ja-JP';
-                utterance.rate = 0.9;
-                speechSynthesis.speak(utterance);
-            }
-        }
-        
-        function speakEnglishSentence() {
-            if ('speechSynthesis' in window) {
-                speechSynthesis.cancel();
-                const [,,subjectEnglish] = subjectSelect.value.split('/');
-                const [,,adjectiveEnglish] = adjectiveSelect.value.split('/');
-                const [,,copulaEnglish] = copulaSelect.value.split('/');
-                
-                const englishText = `${subjectEnglish || customSubject.value} ${adjectiveEnglish || customAdjective.value} ${copulaEnglish}`;
-                const utterance = new SpeechSynthesisUtterance(englishText);
-                utterance.lang = 'en-US';
                 utterance.rate = 0.9;
                 speechSynthesis.speak(utterance);
             }
@@ -561,6 +536,7 @@
                 
                 // Display sentence based on language mode
                 if (englishMode) {
+                    // English mode shows simplified "be" verb forms
                     japaneseSentence.textContent = `${subjectEnglish} ${adjectiveEnglish} ${copulaEnglish}`;
                     romajiPronunciation.textContent = '';
                 } else {
@@ -568,7 +544,7 @@
                     romajiPronunciation.textContent = `${subjectRomaji} wa ${adjustedAdjectiveRomaji}${copulaRomaji}`;
                 }
                 
-                // Start speaking automatically when sentence is complete
+                // Start speaking Japanese audio automatically
                 startSpeech();
             } else {
                 japaneseSentence.textContent = 'Select subject, adjective and tense/form';
@@ -581,7 +557,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             subjectSelect.value = "わたし/watashi/I";
             adjectiveSelect.value = "おいしい/oishii/delicious";
-            copulaSelect.value = "です。/desu./am/is/are.";
+            copulaSelect.value = "です。/desu./be";
             updateSentence();
         });
     </script>
