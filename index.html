@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Japanese Adjective Practice</title>
     <style>
         :root {
@@ -12,6 +12,7 @@
             --button-text: #ffffff;
             --input-bg: #222222;
             --border-color: #444444;
+            --primary-color: #4a89dc;
         }
         
         .light-mode {
@@ -21,54 +22,77 @@
             --button-text: #000000;
             --input-bg: #ffffff;
             --border-color: #dddddd;
+            --primary-color: #3b7dd8;
         }
         
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 10px;
+            padding: 20px;
             transition: all 0.3s ease;
-            font-size: 14px;
+            font-size: 16px;
+            line-height: 1.5;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
         
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
         
         h1 {
-            font-size: 16px;
+            font-size: 24px;
             margin: 0;
+            font-weight: 600;
+            color: var(--primary-color);
+            letter-spacing: -0.5px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .controls {
             display: flex;
-            gap: 5px;
+            gap: 10px;
         }
         
         .mode-toggle, .language-toggle {
-            padding: 5px 8px;
-            font-size: 11px;
+            padding: 8px 12px;
+            font-size: 14px;
             background-color: var(--button-bg);
             color: var(--button-text);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .mode-toggle:hover, .language-toggle:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
         
         .builder {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
         .row {
             display: flex;
-            gap: 5px;
+            gap: 10px;
             align-items: center;
         }
         
@@ -77,77 +101,117 @@
         }
         
         .particle {
-            width: 20px;
+            width: 30px;
             text-align: center;
-            font-size: 14px;
+            font-size: 18px;
+            font-weight: bold;
         }
         
         .particle-label {
-            font-size: 9px;
+            font-size: 12px;
             color: #888;
             text-align: center;
+            margin-top: 4px;
         }
         
         select, .custom-input {
             width: 100%;
-            padding: 6px;
-            font-size: 12px;
+            padding: 12px;
+            font-size: 16px;
             background-color: var(--input-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             box-sizing: border-box;
+            margin-bottom: 8px;
+            transition: border 0.3s ease;
+        }
+        
+        select:focus, .custom-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 137, 220, 0.2);
         }
         
         .result {
-            margin-top: 15px;
-            padding: 10px;
+            margin-top: 25px;
+            padding: 20px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 10px;
             background-color: var(--input-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .japanese-sentence {
-            font-size: 16px;
-            margin-bottom: 5px;
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            min-height: 1.2em;
         }
         
         .romaji {
             color: #888;
             font-style: italic;
-            font-size: 12px;
+            font-size: 16px;
+            min-height: 1.2em;
         }
         
         .negative-note {
             color: #ff9800;
-            font-size: 11px;
-            margin-top: 5px;
+            font-size: 14px;
+            margin-top: 10px;
             display: none;
+            padding: 8px;
+            background-color: rgba(255, 152, 0, 0.1);
+            border-radius: 4px;
         }
         
         .footer {
-            margin-top: 20px;
+            margin-top: 40px;
             text-align: center;
-            padding-top: 10px;
+            padding-top: 20px;
             border-top: 1px solid var(--border-color);
-            font-size: 11px;
+            font-size: 14px;
+            color: #888;
         }
         
-        .qr-sample {
-            width: 120px;
-            height: 120px;
-            margin: 8px auto;
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border-color);
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
         }
         
-        .qr-sample::before {
-            content: "[QR Code Image]";
-            color: #000;
-            font-size: 12px;
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .particle {
+                width: 100%;
+                text-align: left;
+                padding: 10px 0;
+            }
+            
+            .particle-label {
+                text-align: left;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .japanese-sentence {
+                font-size: 18px;
+            }
+            
+            .romaji {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -177,7 +241,7 @@
                     <option value="それ/sore/that">それ (that)</option>
                     <option value="あれ/are/that (over there)">あれ (that over there)</option>
                 </select>
-                <input type="text" class="custom-input" id="customSubject" placeholder="Or enter custom">
+                <input type="text" class="custom-input" id="customSubject" placeholder="Or enter custom subject">
             </div>
             
             <div>
@@ -219,7 +283,7 @@
                     <option value="べんり/benri/convenient">べんり (convenient)</option>
                     <option value="ふべん/fuben/inconvenient">ふべん (inconvenient)</option>
                 </select>
-                <input type="text" class="custom-input" id="customAdjective" placeholder="Or enter custom">
+                <input type="text" class="custom-input" id="customAdjective" placeholder="Or enter custom adjective">
             </div>
         </div>
         
@@ -242,11 +306,15 @@
     </div>
     
     <div class="result" id="result">
-        <div class="japanese-sentence" id="japaneseSentence"></div>
+        <div class="japanese-sentence" id="japaneseSentence">Select subject, adjective and tense/form</div>
         <div class="romaji" id="romajiPronunciation"></div>
         <div class="negative-note" id="negativeNote"></div>
     </div>
-    >
+    
+    <footer class="footer">
+        <p>Contact me: <a href="mailto:mementomorikatsu@gmail.com">mementomorikatsu@gmail.com</a></p>
+        <p>Mo Yasuda</p>
+    </footer>
     
     <script>
         // Dark/Light mode toggle
@@ -255,10 +323,18 @@
             document.body.classList.toggle('light-mode');
             if (document.body.classList.contains('light-mode')) {
                 modeToggle.textContent = 'Dark';
+                localStorage.setItem('theme', 'light');
             } else {
                 modeToggle.textContent = 'Light';
+                localStorage.setItem('theme', 'dark');
             }
         });
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            modeToggle.textContent = 'Dark';
+        }
         
         // Language toggle
         const languageToggle = document.getElementById('languageToggle');
@@ -287,9 +363,18 @@
         let originalAdjectiveRomaji = '';
         
         // Event listeners
-        subjectSelect.addEventListener('change', updateSentence);
-        customSubject.addEventListener('input', updateSentence);
+        subjectSelect.addEventListener('change', function() {
+            customSubject.value = '';
+            updateSentence();
+        });
+        
+        customSubject.addEventListener('input', function() {
+            if (this.value) subjectSelect.value = '';
+            updateSentence();
+        });
+        
         adjectiveSelect.addEventListener('change', function() {
+            customAdjective.value = '';
             if (adjectiveSelect.value) {
                 const [japanese, romaji] = adjectiveSelect.value.split('/');
                 originalAdjective = japanese;
@@ -297,11 +382,14 @@
             }
             updateSentence();
         });
+        
         customAdjective.addEventListener('input', function() {
+            if (this.value) adjectiveSelect.value = '';
             originalAdjective = '';
             originalAdjectiveRomaji = '';
             updateSentence();
         });
+        
         copulaSelect.addEventListener('change', updateSentence);
         
         function updateSentence() {
@@ -378,20 +466,23 @@
         
         function speakJapanese(text) {
             if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                speechSynthesis.cancel();
+                
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ja-JP';
+                utterance.rate = 0.9;
                 speechSynthesis.speak(utterance);
             }
         }
+        
+        // Initialize with an example
+        window.addEventListener('DOMContentLoaded', function() {
+            subjectSelect.value = "わたし/watashi/I";
+            adjectiveSelect.value = "おいしい/oishii/delicious";
+            copulaSelect.value = "です。/desu./am/is/are.";
+            updateSentence();
+        });
     </script>
-    
-        <footer class="footer">
-        <p>Contact me</p>
-        <p>
-            <a href="mailto:mementomorikatsu@gmail.com">mementomorikatsu@gmail.com</a>
-        </p>
-        <p>Mo Yasuda</p>
-    </footer>
-    
 </body>
 </html>
