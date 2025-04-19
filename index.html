@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Adjective Practice</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --button-bg: #333333;
+            --button-text: #ffffff;
+            --input-bg: #222222;
+            --border-color: #444444;
+        }
+        
+        .light-mode {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #f0f0f0;
+            --button-text: #000000;
+            --input-bg: #ffffff;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .mode-toggle, .language-toggle {
+            padding: 5px 8px;
+            font-size: 11px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .builder {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .subject-container, .adjective-container, .copula-container {
+            flex: 1;
+        }
+        
+        .particle {
+            width: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .particle-label {
+            font-size: 9px;
+            color: #888;
+            text-align: center;
+        }
+        
+        select, .custom-input {
+            width: 100%;
+            padding: 6px;
+            font-size: 12px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+        }
+        
+        .japanese-sentence {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .romaji {
+            color: #888;
+            font-style: italic;
+            font-size: 12px;
+        }
+        
+        .negative-note {
+            color: #ff9800;
+            font-size: 11px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            font-size: 11px;
+        }
+        
+        .qr-sample {
+            width: 120px;
+            height: 120px;
+            margin: 8px auto;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .qr-sample::before {
+            content: "[QR Code Image]";
+            color: #000;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Japanese Adjective Practice</h1>
+        <div class="controls">
+            <button class="mode-toggle" id="modeToggle">Dark</button>
+            <button class="language-toggle" id="languageToggle">EN</button>
+        </div>
+    </div>
+    
+    <div class="builder">
+        <div class="row">
+            <div class="subject-container">
+                <select id="subjectSelect">
+                    <option value="">Select subject</option>
+                    <option value="わたし/watashi/I">わたし (I)</option>
+                    <option value="あなた/anata/you">あなた (you)</option>
+                    <option value="かれ/kare/he">かれ (he)</option>
+                    <option value="かのじょ/kanojo/she">かのじょ (she)</option>
+                    <option value="わたしたち/watashitachi/we">わたしたち (we)</option>
+                    <option value="あなたたち/anatatachi/you all">あなたたち (you all)</option>
+                    <option value="かれら/karera/they (m)">かれら (they m)</option>
+                    <option value="かのじょら/kanojora/they (f)">かのじょら (they f)</option>
+                    <option value="これ/kore/this">これ (this)</option>
+                    <option value="それ/sore/that">それ (that)</option>
+                    <option value="あれ/are/that (over there)">あれ (that over there)</option>
+                </select>
+                <input type="text" class="custom-input" id="customSubject" placeholder="Or enter custom">
+            </div>
+            
+            <div>
+                <div class="particle">は</div>
+                <div class="particle-label">(subject)</div>
+            </div>
+            
+            <div class="adjective-container">
+                <select id="adjectiveSelect">
+                    <option value="">Select adjective</option>
+                    <option value="いい/ii/good">いい (good)</option>
+                    <option value="わるい/warui/bad">わるい (bad)</option>
+                    <option value="たかい/takai/expensive">たかい (expensive)</option>
+                    <option value="やすい/yasui/cheap">やすい (cheap)</option>
+                    <option value="おおきい/ookii/big">おおきい (big)</option>
+                    <option value="ちいさい/chiisai/small">ちいさい (small)</option>
+                    <option value="ながい/nagai/long">ながい (long)</option>
+                    <option value="みじかい/mijikai/short">みじかい (short)</option>
+                    <option value="あつい/atsui/hot">あつい (hot)</option>
+                    <option value="さむい/samui/cold">さむい (cold)</option>
+                    <option value="あたらしい/atarashii/new">あたらしい (new)</option>
+                    <option value="ふるい/furui/old">ふるい (old)</option>
+                    <option value="むずかしい/muzukashii/difficult">むずかしい (difficult)</option>
+                    <option value="やさしい/yasashii/easy">やさしい (easy)</option>
+                    <option value="おもしろい/omoshiroi/interesting">おもしろい (interesting)</option>
+                    <option value="つまらない/tsumaranai/boring">つまらない (boring)</option>
+                    <option value="たのしい/tanoshii/fun">たのしい (fun)</option>
+                    <option value="かなしい/kanashii/sad">かなしい (sad)</option>
+                    <option value="うれしい/ureshii/happy">うれしい (happy)</option>
+                    <option value="おいしい/oishii/delicious">おいしい (delicious)</option>
+                    <option value="まずい/mazui/bad-tasting">まずい (bad-tasting)</option>
+                    <option value="はやい/hayai/fast">はやい (fast)</option>
+                    <option value="おそい/osoi/slow">おそい (slow)</option>
+                    <option value="かるい/karui/light">かるい (light)</option>
+                    <option value="おもい/omoi/heavy">おもい (heavy)</option>
+                    <option value="しんせつ/shinsetsu/kind">しんせつ (kind)</option>
+                    <option value="きれい/kirei/beautiful">きれい (beautiful)</option>
+                    <option value="げんき/genki/healthy">げんき (healthy)</option>
+                    <option value="べんり/benri/convenient">べんり (convenient)</option>
+                    <option value="ふべん/fuben/inconvenient">ふべん (inconvenient)</option>
+                </select>
+                <input type="text" class="custom-input" id="customAdjective" placeholder="Or enter custom">
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="copula-container">
+                <select id="copulaSelect">
+                    <option value="">Select tense/form</option>
+                    <option value="でした。/deshita./was.">でした。 (past affirmative)</option>
+                    <option value="ではなかった。/dewa nakatta./was not.">ではなかった。 (past negative)</option>
+                    <option value="でしたか？/deshita ka?/was?">でしたか？ (past question)</option>
+                    <option value="です。/desu./am/is/are.">です。 (present affirmative)</option>
+                    <option value="ではありません。/dewa arimasen./am/is/are not.">ではありません。 (present negative)</option>
+                    <option value="ですか？/desu ka?/am/is/are?">ですか？ (present question)</option>
+                    <option value="でしょう。/deshou./will be.">でしょう。 (future affirmative)</option>
+                    <option value="ではないでしょう。/dewa nai deshou./will not be.">ではないでしょう。 (future negative)</option>
+                    <option value="でしょうか？/deshou ka?/will be?">でしょうか？ (future question)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="result" id="result">
+        <div class="japanese-sentence" id="japaneseSentence"></div>
+        <div class="romaji" id="romajiPronunciation"></div>
+        <div class="negative-note" id="negativeNote"></div>
+    </div>
+    >
+    
+    <script>
+        // Dark/Light mode toggle
+        const modeToggle = document.getElementById('modeToggle');
+        modeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('light-mode');
+            if (document.body.classList.contains('light-mode')) {
+                modeToggle.textContent = 'Dark';
+            } else {
+                modeToggle.textContent = 'Light';
+            }
+        });
+        
+        // Language toggle
+        const languageToggle = document.getElementById('languageToggle');
+        let englishMode = false;
+        
+        languageToggle.addEventListener('click', function() {
+            englishMode = !englishMode;
+            languageToggle.textContent = englishMode ? 'JP' : 'EN';
+            updateSentence();
+        });
+        
+        // Form elements
+        const subjectSelect = document.getElementById('subjectSelect');
+        const customSubject = document.getElementById('customSubject');
+        const adjectiveSelect = document.getElementById('adjectiveSelect');
+        const customAdjective = document.getElementById('customAdjective');
+        const copulaSelect = document.getElementById('copulaSelect');
+        
+        // Result elements
+        const japaneseSentence = document.getElementById('japaneseSentence');
+        const romajiPronunciation = document.getElementById('romajiPronunciation');
+        const negativeNote = document.getElementById('negativeNote');
+        
+        // Store original adjective for negative forms
+        let originalAdjective = '';
+        let originalAdjectiveRomaji = '';
+        
+        // Event listeners
+        subjectSelect.addEventListener('change', updateSentence);
+        customSubject.addEventListener('input', updateSentence);
+        adjectiveSelect.addEventListener('change', function() {
+            if (adjectiveSelect.value) {
+                const [japanese, romaji] = adjectiveSelect.value.split('/');
+                originalAdjective = japanese;
+                originalAdjectiveRomaji = romaji;
+            }
+            updateSentence();
+        });
+        customAdjective.addEventListener('input', function() {
+            originalAdjective = '';
+            originalAdjectiveRomaji = '';
+            updateSentence();
+        });
+        copulaSelect.addEventListener('change', updateSentence);
+        
+        function updateSentence() {
+            // Get selected values
+            let subject, subjectRomaji, subjectEnglish;
+            let adjective, adjectiveRomaji, adjectiveEnglish;
+            let copula, copulaRomaji, copulaEnglish;
+            
+            // Get subject
+            if (customSubject.value) {
+                subject = customSubject.value;
+                subjectRomaji = customSubject.value;
+                subjectEnglish = customSubject.value;
+            } else if (subjectSelect.value) {
+                [subject, subjectRomaji, subjectEnglish] = subjectSelect.value.split('/');
+            }
+            
+            // Get adjective
+            if (customAdjective.value) {
+                adjective = customAdjective.value;
+                adjectiveRomaji = customAdjective.value;
+                adjectiveEnglish = customAdjective.value;
+            } else if (adjectiveSelect.value) {
+                [adjective, adjectiveRomaji, adjectiveEnglish] = adjectiveSelect.value.split('/');
+            }
+            
+            // Get copula
+            if (copulaSelect.value) {
+                [copula, copulaRomaji, copulaEnglish] = copulaSelect.value.split('/');
+            }
+            
+            // Check if we have all parts
+            if (subject && adjective && copula) {
+                // Handle negative forms
+                let adjustedAdjective = adjective;
+                let adjustedAdjectiveRomaji = adjectiveRomaji;
+                negativeNote.style.display = 'none';
+                
+                if ((copula.includes('ない') || copula.includes('ありません')) && originalAdjective) {
+                    // For i-adjectives (end with い)
+                    if (originalAdjective.endsWith('い') && !['いい', 'きれい'].includes(originalAdjective)) {
+                        adjustedAdjective = originalAdjective.slice(0, -1) + 'くは';
+                        adjustedAdjectiveRomaji = originalAdjectiveRomaji.slice(0, -1) + 'ku wa';
+                        
+                        negativeNote.textContent = `Negative form: ${originalAdjective} → ${adjustedAdjective}`;
+                        negativeNote.style.display = 'block';
+                    } 
+                    // For na-adjectives (don't end with い or are exceptions)
+                    else if (!originalAdjective.endsWith('い') || ['きれい'].includes(originalAdjective)) {
+                        adjustedAdjective = originalAdjective + 'では';
+                        adjustedAdjectiveRomaji = originalAdjectiveRomaji + ' dewa';
+                        
+                        negativeNote.textContent = `Negative form: ${originalAdjective} → ${adjustedAdjective}`;
+                        negativeNote.style.display = 'block';
+                    }
+                }
+                
+                // Display sentence based on language mode
+                if (englishMode) {
+                    japaneseSentence.textContent = `${subjectEnglish} ${adjectiveEnglish} ${copulaEnglish}`;
+                    romajiPronunciation.textContent = '';
+                } else {
+                    japaneseSentence.textContent = `${subject}は ${adjustedAdjective}${copula}`;
+                    romajiPronunciation.textContent = `${subjectRomaji} wa ${adjustedAdjectiveRomaji}${copulaRomaji}`;
+                    
+                    // Speak the Japanese sentence
+                    speakJapanese(japaneseSentence.textContent);
+                }
+            } else {
+                japaneseSentence.textContent = 'Select subject, adjective and tense/form';
+                romajiPronunciation.textContent = '';
+            }
+        }
+        
+        function speakJapanese(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP';
+                speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
+    
+        <footer class="footer">
+        <p>Contact me</p>
+        <p>
+            <a href="mailto:mementomorikatsu@gmail.com">mementomorikatsu@gmail.com</a>
+        </p>
+        <p>Mo Yasuda</p>
+    </footer>
+    
+</body>
+</html>
