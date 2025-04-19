@@ -442,17 +442,25 @@
             }
             isSpeaking = false;
         }
-        
+
+     //変更
+   
         function speakJapanese() {
-            if ('speechSynthesis' in window && japaneseSentence.textContent) {
-                speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(japaneseSentence.textContent);
-                utterance.lang = 'ja-JP';
-                utterance.rate = 0.9;
-                speechSynthesis.speak(utterance);
-            }
-        }
+    if ('speechSynthesis' in window && japaneseSentence.textContent) {
+        speechSynthesis.cancel();
         
+        // 変更点: 助詞「は」を「わ」に変換して発音
+        let speechText = japaneseSentence.textContent.replace(/(\S+)は/g, '$1わ');
+        
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 0.9;
+        speechSynthesis.speak(utterance);
+    }
+}
+        
+//変更終了
+
         // Clear button functionality
         clearButton.addEventListener('click', function() {
             // Reset all select elements
